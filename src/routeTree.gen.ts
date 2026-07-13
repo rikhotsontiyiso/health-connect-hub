@@ -10,7 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as PatientInfoRouteImport } from './routes/patient-info'
 import { Route as DoctorsRouteImport } from './routes/doctors'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -19,9 +23,29 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatientInfoRoute = PatientInfoRouteImport.update({
+  id: '/patient-info',
+  path: '/patient-info',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DoctorsRoute = DoctorsRouteImport.update({
   id: '/doctors',
   path: '/doctors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppointmentsRoute = AppointmentsRouteImport.update({
+  id: '/appointments',
+  path: '/appointments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -38,34 +62,75 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/appointments': typeof AppointmentsRoute
+  '/blog': typeof BlogRoute
+  '/contact': typeof ContactRoute
   '/doctors': typeof DoctorsRoute
+  '/patient-info': typeof PatientInfoRoute
   '/services': typeof ServicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/appointments': typeof AppointmentsRoute
+  '/blog': typeof BlogRoute
+  '/contact': typeof ContactRoute
   '/doctors': typeof DoctorsRoute
+  '/patient-info': typeof PatientInfoRoute
   '/services': typeof ServicesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/appointments': typeof AppointmentsRoute
+  '/blog': typeof BlogRoute
+  '/contact': typeof ContactRoute
   '/doctors': typeof DoctorsRoute
+  '/patient-info': typeof PatientInfoRoute
   '/services': typeof ServicesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/doctors' | '/services'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/appointments'
+    | '/blog'
+    | '/contact'
+    | '/doctors'
+    | '/patient-info'
+    | '/services'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/doctors' | '/services'
-  id: '__root__' | '/' | '/about' | '/doctors' | '/services'
+  to:
+    | '/'
+    | '/about'
+    | '/appointments'
+    | '/blog'
+    | '/contact'
+    | '/doctors'
+    | '/patient-info'
+    | '/services'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/appointments'
+    | '/blog'
+    | '/contact'
+    | '/doctors'
+    | '/patient-info'
+    | '/services'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AppointmentsRoute: typeof AppointmentsRoute
+  BlogRoute: typeof BlogRoute
+  ContactRoute: typeof ContactRoute
   DoctorsRoute: typeof DoctorsRoute
+  PatientInfoRoute: typeof PatientInfoRoute
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -78,11 +143,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patient-info': {
+      id: '/patient-info'
+      path: '/patient-info'
+      fullPath: '/patient-info'
+      preLoaderRoute: typeof PatientInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/doctors': {
       id: '/doctors'
       path: '/doctors'
       fullPath: '/doctors'
       preLoaderRoute: typeof DoctorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/appointments': {
+      id: '/appointments'
+      path: '/appointments'
+      fullPath: '/appointments'
+      preLoaderRoute: typeof AppointmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -105,7 +198,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AppointmentsRoute: AppointmentsRoute,
+  BlogRoute: BlogRoute,
+  ContactRoute: ContactRoute,
   DoctorsRoute: DoctorsRoute,
+  PatientInfoRoute: PatientInfoRoute,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport
