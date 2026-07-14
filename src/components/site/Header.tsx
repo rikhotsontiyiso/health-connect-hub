@@ -1,7 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Phone, HeartPulse } from "lucide-react";
+import { Menu, X, Phone, HeartPulse, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { clinic } from "@/lib/clinic";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -16,6 +19,17 @@ const nav = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { user, isStaff } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/", replace: true });
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
       <div className="bg-primary text-primary-foreground text-xs">
@@ -51,11 +65,43 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {user ? (
+            <>
+              <Link
+                to="/portal/appointments"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium hover:border-primary"
+              >
+                <UserIcon className="h-4 w-4" /> My appointments
+              </Link>
+              {isStaff && (
+                <Link
+                  to="/staff/appointments"
+                  className="hidden md:inline-flex items-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
+                >
+                  Staff
+                </Link>
+              )}
+              <button
+                onClick={signOut}
+                title="Sign out"
+                className="hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border hover:border-destructive hover:text-destructive"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium hover:border-primary"
+            >
+              <LogIn className="h-4 w-4" /> Sign in
+            </Link>
+          )}
           <Link
             to="/appointments"
             className="hidden sm:inline-flex items-center rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm hover:brightness-105 transition"
           >
-            Book Appointment
+            Book
           </Link>
           <button
             aria-label="Toggle menu"
@@ -75,11 +121,20 @@ export function Header() {
                 key={n.to}
                 to={n.to}
                 onClick={() => setOpen(false)}
-                className="px-2 py-3 text-sm font-medium border-b border-border/60 last:border-0 data-[status=active]:text-primary"
+                className="px-2 py-3 text-sm font-medium border-b border-border/60 data-[status=active]:text-primary"
               >
                 {n.label}
               </Link>
             ))}
+            {user ? (
+              <>
+                <Link to="/portal/appointments" onClick={() => setOpen(false)} className="px-2 py-3 text-sm font-medium border-b border-border/60">My appointments</Link>
+                {isStaff && <Link to="/staff/appointments" onClick={() => setOpen(false)} className="px-2 py-3 text-sm font-medium border-b border-border/60">Staff dashboard</Link>}
+                <button onClick={() => { setOpen(false); signOut(); }} className="px-2 py-3 text-left text-sm font-medium text-destructive">Sign out</button>
+              </>
+            ) : (
+              <Link to="/auth" onClick={() => setOpen(false)} className="px-2 py-3 text-sm font-medium border-b border-border/60">Sign in</Link>
+            )}
             <Link
               to="/appointments"
               onClick={() => setOpen(false)}
