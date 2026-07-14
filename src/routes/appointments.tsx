@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight, LogIn } from "lucide-react";
 import { PageHero } from "@/components/site/SiteShell";
+import { StatusBadge } from "@/components/site/StatusBadge";
 import { services, doctors } from "@/lib/clinic";
+import { useAuth } from "@/hooks/use-auth";
+import { createAppointment } from "@/lib/appointments.functions";
 
 export const Route = createFileRoute("/appointments")({
   head: () => ({
