@@ -116,7 +116,9 @@ function Appointments() {
                 <p className="text-sm text-muted-foreground">Booking reference</p>
                 <p className="font-display text-2xl font-bold">{ref}</p>
               </div>
+              <div className="ml-auto"><StatusBadge status="pending" /></div>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">Your appointment is <strong>Pending</strong>. A receptionist will confirm shortly. You'll be notified by email.</p>
             <dl className="mt-8 grid gap-4 sm:grid-cols-2 text-sm">
               <Row label="Patient" value={`${form.firstName} ${form.lastName}`} />
               <Row label="Doctor" value={doctors.find(d => d.id === form.doctor)?.name ?? form.doctor} />
@@ -126,6 +128,9 @@ function Appointments() {
               <Row label="Payment" value={form.payment === "clinic" ? "Pay at clinic" : "Card / Online"} />
             </dl>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/portal/appointments" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
+                View my appointments
+              </Link>
               <button onClick={() => { setSubmitted(false); setForm(empty); }} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
                 Book another
               </button>
