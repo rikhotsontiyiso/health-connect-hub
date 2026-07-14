@@ -36,9 +36,14 @@ const empty: Form = {
 };
 
 function Appointments() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const createFn = useServerFn(createAppointment);
   const [form, setForm] = useState<Form>(empty);
   const [submitted, setSubmitted] = useState(false);
   const [ref, setRef] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
@@ -46,13 +51,57 @@ function Appointments() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.agree) return;
-    const r = "UFC-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    setRef(r);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setBusy(true);
+    setError(null);
+    try {
+      const row = (await createFn({
+        data: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          dob: form.dob || undefined,
+          gender: form.gender || undefined,
+          service: form.service,
+          doctor: form.doctor,
+          date: form.date,
+          time: form.time,
+          reason: form.reason || undefined,
+          medicalAid: form.medicalAid || undefined,
+          notes: form.notes || undefined,
+        },
+      })) as { id: string };
+      setRef(row.id.slice(0, 8).toUpperCase());
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to book appointment");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!loading && !user) {
+    return (
+      <>
+        <PageHero eyebrow="Appointments" title="Sign in to book" description="Create a free account or sign in to book and manage your appointments." />
+        <section className="mx-auto max-w-md px-4 py-16">
+          <div className="rounded-2xl border border-border bg-surface p-8 text-center">
+            <LogIn className="mx-auto h-8 w-8 text-primary" />
+            <p className="mt-4 text-sm text-muted-foreground">You need an account to book online so you can view your upcoming and past appointments.</p>
+            <button
+              onClick={() => navigate({ to: "/auth", search: { redirect: "/appointments" } })}
+              className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
+            >
+              Sign in or create account <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </section>
+      </>
+    );
   }
 
   if (submitted) {
