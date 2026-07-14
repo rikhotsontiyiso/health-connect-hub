@@ -21,6 +21,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedStaffAppointmentsRouteImport } from './routes/_authenticated/staff.appointments'
 import { Route as AuthenticatedPortalAppointmentsRouteImport } from './routes/_authenticated/portal.appointments'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -82,6 +83,12 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStaffAppointmentsRoute =
+  AuthenticatedStaffAppointmentsRouteImport.update({
+    id: '/staff/appointments',
+    path: '/staff/appointments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalAppointmentsRoute =
   AuthenticatedPortalAppointmentsRouteImport.update({
     id: '/portal/appointments',
@@ -102,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,6 +141,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/_authenticated/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/portal/appointments'
+    | '/staff/appointments'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/portal/appointments'
+    | '/staff/appointments'
   id:
     | '__root__'
     | '/'
@@ -177,6 +189,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/_authenticated/portal/appointments'
+    | '/_authenticated/staff/appointments'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -280,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/staff/appointments': {
+      id: '/_authenticated/staff/appointments'
+      path: '/staff/appointments'
+      fullPath: '/staff/appointments'
+      preLoaderRoute: typeof AuthenticatedStaffAppointmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/appointments': {
       id: '/_authenticated/portal/appointments'
       path: '/portal/appointments'
@@ -292,10 +312,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalAppointmentsRoute: typeof AuthenticatedPortalAppointmentsRoute
+  AuthenticatedStaffAppointmentsRoute: typeof AuthenticatedStaffAppointmentsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalAppointmentsRoute: AuthenticatedPortalAppointmentsRoute,
+  AuthenticatedStaffAppointmentsRoute: AuthenticatedStaffAppointmentsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
