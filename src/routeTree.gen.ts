@@ -15,10 +15,14 @@ import { Route as PatientInfoRouteImport } from './routes/patient-info'
 import { Route as DoctorsRouteImport } from './routes/doctors'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedStaffAppointmentsRouteImport } from './routes/_authenticated/staff.appointments'
+import { Route as AuthenticatedPortalAppointmentsRouteImport } from './routes/_authenticated/portal.appointments'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -50,6 +54,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppointmentsRoute = AppointmentsRouteImport.update({
   id: '/appointments',
   path: '/appointments',
@@ -58,6 +67,10 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -70,11 +83,24 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStaffAppointmentsRoute =
+  AuthenticatedStaffAppointmentsRouteImport.update({
+    id: '/staff/appointments',
+    path: '/staff/appointments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalAppointmentsRoute =
+  AuthenticatedPortalAppointmentsRouteImport.update({
+    id: '/portal/appointments',
+    path: '/portal/appointments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/contact': typeof ContactRoute
   '/doctors': typeof DoctorsRoute
@@ -82,11 +108,14 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
+  '/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/contact': typeof ContactRoute
   '/doctors': typeof DoctorsRoute
@@ -94,12 +123,16 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
+  '/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/contact': typeof ContactRoute
   '/doctors': typeof DoctorsRoute
@@ -107,6 +140,8 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
+  '/_authenticated/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/_authenticated/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -114,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/appointments'
+    | '/auth'
     | '/blog'
     | '/contact'
     | '/doctors'
@@ -121,11 +157,14 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/api/chat'
+    | '/portal/appointments'
+    | '/staff/appointments'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/appointments'
+    | '/auth'
     | '/blog'
     | '/contact'
     | '/doctors'
@@ -133,11 +172,15 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/api/chat'
+    | '/portal/appointments'
+    | '/staff/appointments'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/appointments'
+    | '/auth'
     | '/blog'
     | '/contact'
     | '/doctors'
@@ -145,12 +188,16 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/api/chat'
+    | '/_authenticated/portal/appointments'
+    | '/_authenticated/staff/appointments'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AppointmentsRoute: typeof AppointmentsRoute
+  AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRoute
   ContactRoute: typeof ContactRoute
   DoctorsRoute: typeof DoctorsRoute
@@ -204,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/appointments': {
       id: '/appointments'
       path: '/appointments'
@@ -216,6 +270,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -232,13 +293,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/staff/appointments': {
+      id: '/_authenticated/staff/appointments'
+      path: '/staff/appointments'
+      fullPath: '/staff/appointments'
+      preLoaderRoute: typeof AuthenticatedStaffAppointmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/appointments': {
+      id: '/_authenticated/portal/appointments'
+      path: '/portal/appointments'
+      fullPath: '/portal/appointments'
+      preLoaderRoute: typeof AuthenticatedPortalAppointmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPortalAppointmentsRoute: typeof AuthenticatedPortalAppointmentsRoute
+  AuthenticatedStaffAppointmentsRoute: typeof AuthenticatedStaffAppointmentsRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPortalAppointmentsRoute: AuthenticatedPortalAppointmentsRoute,
+  AuthenticatedStaffAppointmentsRoute: AuthenticatedStaffAppointmentsRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AppointmentsRoute: AppointmentsRoute,
+  AuthRoute: AuthRoute,
   BlogRoute: BlogRoute,
   ContactRoute: ContactRoute,
   DoctorsRoute: DoctorsRoute,
@@ -250,13 +340,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

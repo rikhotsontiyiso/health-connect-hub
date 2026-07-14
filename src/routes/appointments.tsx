@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight, LogIn } from "lucide-react";
 import { PageHero } from "@/components/site/SiteShell";
+import { StatusBadge } from "@/components/site/StatusBadge";
 import { services, doctors } from "@/lib/clinic";
+import { useAuth } from "@/hooks/use-auth";
+import { createAppointment } from "@/lib/appointments.functions";
 
 export const Route = createFileRoute("/appointments")({
   head: () => ({
@@ -32,9 +36,14 @@ const empty: Form = {
 };
 
 function Appointments() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const createFn = useServerFn(createAppointment);
   const [form, setForm] = useState<Form>(empty);
   const [submitted, setSubmitted] = useState(false);
   const [ref, setRef] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
@@ -42,13 +51,57 @@ function Appointments() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.agree) return;
-    const r = "UFC-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    setRef(r);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setBusy(true);
+    setError(null);
+    try {
+      const row = (await createFn({
+        data: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          dob: form.dob || undefined,
+          gender: form.gender || undefined,
+          service: form.service,
+          doctor: form.doctor,
+          date: form.date,
+          time: form.time,
+          reason: form.reason || undefined,
+          medicalAid: form.medicalAid || undefined,
+          notes: form.notes || undefined,
+        },
+      })) as { id: string };
+      setRef(row.id.slice(0, 8).toUpperCase());
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to book appointment");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!loading && !user) {
+    return (
+      <>
+        <PageHero eyebrow="Appointments" title="Sign in to book" description="Create a free account or sign in to book and manage your appointments." />
+        <section className="mx-auto max-w-md px-4 py-16">
+          <div className="rounded-2xl border border-border bg-surface p-8 text-center">
+            <LogIn className="mx-auto h-8 w-8 text-primary" />
+            <p className="mt-4 text-sm text-muted-foreground">You need an account to book online so you can view your upcoming and past appointments.</p>
+            <button
+              onClick={() => navigate({ to: "/auth", search: { redirect: "/appointments" } })}
+              className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
+            >
+              Sign in or create account <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </section>
+      </>
+    );
   }
 
   if (submitted) {
@@ -63,7 +116,9 @@ function Appointments() {
                 <p className="text-sm text-muted-foreground">Booking reference</p>
                 <p className="font-display text-2xl font-bold">{ref}</p>
               </div>
+              <div className="ml-auto"><StatusBadge status="pending" /></div>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">Your appointment is <strong>Pending</strong>. A receptionist will confirm shortly. You'll be notified by email.</p>
             <dl className="mt-8 grid gap-4 sm:grid-cols-2 text-sm">
               <Row label="Patient" value={`${form.firstName} ${form.lastName}`} />
               <Row label="Doctor" value={doctors.find(d => d.id === form.doctor)?.name ?? form.doctor} />
@@ -73,6 +128,9 @@ function Appointments() {
               <Row label="Payment" value={form.payment === "clinic" ? "Pay at clinic" : "Card / Online"} />
             </dl>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/portal/appointments" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
+                View my appointments
+              </Link>
               <button onClick={() => { setSubmitted(false); setForm(empty); }} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
                 Book another
               </button>
@@ -167,8 +225,9 @@ function Appointments() {
             </label>
           </div>
 
-          <button type="submit" disabled={!form.agree} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-md hover:brightness-105 transition disabled:opacity-50 disabled:cursor-not-allowed">
-            Confirm booking <ArrowRight className="h-4 w-4" />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <button type="submit" disabled={!form.agree || busy} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-md hover:brightness-105 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            {busy ? "Booking…" : <>Confirm booking <ArrowRight className="h-4 w-4" /></>}
           </button>
         </form>
 
