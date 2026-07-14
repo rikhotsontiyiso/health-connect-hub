@@ -225,8 +225,9 @@ function Appointments() {
             </label>
           </div>
 
-          <button type="submit" disabled={!form.agree} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-md hover:brightness-105 transition disabled:opacity-50 disabled:cursor-not-allowed">
-            Confirm booking <ArrowRight className="h-4 w-4" />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <button type="submit" disabled={!form.agree || busy} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground shadow-md hover:brightness-105 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            {busy ? "Booking…" : <>Confirm booking <ArrowRight className="h-4 w-4" /></>}
           </button>
         </form>
 
