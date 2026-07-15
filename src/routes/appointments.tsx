@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight, LogIn } from "lucide-react";
+import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight, LogIn, Landmark, AlertTriangle } from "lucide-react";
 import { PageHero } from "@/components/site/SiteShell";
 import { StatusBadge } from "@/components/site/StatusBadge";
-import { services, doctors } from "@/lib/clinic";
+import { services, doctors, clinic } from "@/lib/clinic";
 import { useAuth } from "@/hooks/use-auth";
 import { createAppointment } from "@/lib/appointments.functions";
 
