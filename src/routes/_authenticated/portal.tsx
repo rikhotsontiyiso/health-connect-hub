@@ -29,7 +29,7 @@ function PortalLayout() {
               <Link
                 key={n.to}
                 to={n.to}
-                activeOptions={{ exact: n.exact }}
+                activeOptions={{ exact: "exact" in n ? n.exact : false }}
                 className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-primary hover:bg-primary/5 data-[status=active]:bg-primary/10 data-[status=active]:text-primary whitespace-nowrap"
               >
                 <Icon className="h-4 w-4" /> {n.label}

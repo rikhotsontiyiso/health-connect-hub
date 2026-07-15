@@ -21,7 +21,14 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
+import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedStaffAppointmentsRouteImport } from './routes/_authenticated/staff.appointments'
+import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalPrescriptionsRouteImport } from './routes/_authenticated/portal.prescriptions'
+import { Route as AuthenticatedPortalLabResultsRouteImport } from './routes/_authenticated/portal.lab-results'
+import { Route as AuthenticatedPortalInvoicesRouteImport } from './routes/_authenticated/portal.invoices'
+import { Route as AuthenticatedPortalHistoryRouteImport } from './routes/_authenticated/portal.history'
 import { Route as AuthenticatedPortalAppointmentsRouteImport } from './routes/_authenticated/portal.appointments'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -83,17 +90,58 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPortalIndexRoute =
+  AuthenticatedPortalIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedStaffAppointmentsRoute =
   AuthenticatedStaffAppointmentsRouteImport.update({
     id: '/staff/appointments',
     path: '/staff/appointments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalProfileRoute =
+  AuthenticatedPortalProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalPrescriptionsRoute =
+  AuthenticatedPortalPrescriptionsRouteImport.update({
+    id: '/prescriptions',
+    path: '/prescriptions',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalLabResultsRoute =
+  AuthenticatedPortalLabResultsRouteImport.update({
+    id: '/lab-results',
+    path: '/lab-results',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalInvoicesRoute =
+  AuthenticatedPortalInvoicesRouteImport.update({
+    id: '/invoices',
+    path: '/invoices',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalHistoryRoute =
+  AuthenticatedPortalHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalAppointmentsRoute =
   AuthenticatedPortalAppointmentsRouteImport.update({
-    id: '/portal/appointments',
-    path: '/portal/appointments',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/appointments',
+    path: '/appointments',
+    getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -107,9 +155,16 @@ export interface FileRoutesByFullPath {
   '/patient-info': typeof PatientInfoRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/portal/history': typeof AuthenticatedPortalHistoryRoute
+  '/portal/invoices': typeof AuthenticatedPortalInvoicesRoute
+  '/portal/lab-results': typeof AuthenticatedPortalLabResultsRoute
+  '/portal/prescriptions': typeof AuthenticatedPortalPrescriptionsRoute
+  '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
+  '/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,7 +179,13 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/portal/history': typeof AuthenticatedPortalHistoryRoute
+  '/portal/invoices': typeof AuthenticatedPortalInvoicesRoute
+  '/portal/lab-results': typeof AuthenticatedPortalLabResultsRoute
+  '/portal/prescriptions': typeof AuthenticatedPortalPrescriptionsRoute
+  '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
+  '/portal': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -139,9 +200,16 @@ export interface FileRoutesById {
   '/patient-info': typeof PatientInfoRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/portal/appointments': typeof AuthenticatedPortalAppointmentsRoute
+  '/_authenticated/portal/history': typeof AuthenticatedPortalHistoryRoute
+  '/_authenticated/portal/invoices': typeof AuthenticatedPortalInvoicesRoute
+  '/_authenticated/portal/lab-results': typeof AuthenticatedPortalLabResultsRoute
+  '/_authenticated/portal/prescriptions': typeof AuthenticatedPortalPrescriptionsRoute
+  '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/staff/appointments': typeof AuthenticatedStaffAppointmentsRoute
+  '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,9 +224,16 @@ export interface FileRouteTypes {
     | '/patient-info'
     | '/services'
     | '/sitemap.xml'
+    | '/portal'
     | '/api/chat'
     | '/portal/appointments'
+    | '/portal/history'
+    | '/portal/invoices'
+    | '/portal/lab-results'
+    | '/portal/prescriptions'
+    | '/portal/profile'
     | '/staff/appointments'
+    | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -173,7 +248,13 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/portal/appointments'
+    | '/portal/history'
+    | '/portal/invoices'
+    | '/portal/lab-results'
+    | '/portal/prescriptions'
+    | '/portal/profile'
     | '/staff/appointments'
+    | '/portal'
   id:
     | '__root__'
     | '/'
@@ -187,9 +268,16 @@ export interface FileRouteTypes {
     | '/patient-info'
     | '/services'
     | '/sitemap.xml'
+    | '/_authenticated/portal'
     | '/api/chat'
     | '/_authenticated/portal/appointments'
+    | '/_authenticated/portal/history'
+    | '/_authenticated/portal/invoices'
+    | '/_authenticated/portal/lab-results'
+    | '/_authenticated/portal/prescriptions'
+    | '/_authenticated/portal/profile'
     | '/_authenticated/staff/appointments'
+    | '/_authenticated/portal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -293,6 +381,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/portal': {
+      id: '/_authenticated/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof AuthenticatedPortalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/': {
+      id: '/_authenticated/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/staff/appointments': {
       id: '/_authenticated/staff/appointments'
       path: '/staff/appointments'
@@ -300,23 +402,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStaffAppointmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/profile': {
+      id: '/_authenticated/portal/profile'
+      path: '/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/prescriptions': {
+      id: '/_authenticated/portal/prescriptions'
+      path: '/prescriptions'
+      fullPath: '/portal/prescriptions'
+      preLoaderRoute: typeof AuthenticatedPortalPrescriptionsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/lab-results': {
+      id: '/_authenticated/portal/lab-results'
+      path: '/lab-results'
+      fullPath: '/portal/lab-results'
+      preLoaderRoute: typeof AuthenticatedPortalLabResultsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/invoices': {
+      id: '/_authenticated/portal/invoices'
+      path: '/invoices'
+      fullPath: '/portal/invoices'
+      preLoaderRoute: typeof AuthenticatedPortalInvoicesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/history': {
+      id: '/_authenticated/portal/history'
+      path: '/history'
+      fullPath: '/portal/history'
+      preLoaderRoute: typeof AuthenticatedPortalHistoryRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/appointments': {
       id: '/_authenticated/portal/appointments'
-      path: '/portal/appointments'
+      path: '/appointments'
       fullPath: '/portal/appointments'
       preLoaderRoute: typeof AuthenticatedPortalAppointmentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedPortalRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
+interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAppointmentsRoute: typeof AuthenticatedPortalAppointmentsRoute
+  AuthenticatedPortalHistoryRoute: typeof AuthenticatedPortalHistoryRoute
+  AuthenticatedPortalInvoicesRoute: typeof AuthenticatedPortalInvoicesRoute
+  AuthenticatedPortalLabResultsRoute: typeof AuthenticatedPortalLabResultsRoute
+  AuthenticatedPortalPrescriptionsRoute: typeof AuthenticatedPortalPrescriptionsRoute
+  AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
+  AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+}
+
+const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalAppointmentsRoute: AuthenticatedPortalAppointmentsRoute,
+  AuthenticatedPortalHistoryRoute: AuthenticatedPortalHistoryRoute,
+  AuthenticatedPortalInvoicesRoute: AuthenticatedPortalInvoicesRoute,
+  AuthenticatedPortalLabResultsRoute: AuthenticatedPortalLabResultsRoute,
+  AuthenticatedPortalPrescriptionsRoute: AuthenticatedPortalPrescriptionsRoute,
+  AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
+  AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+}
+
+const AuthenticatedPortalRouteWithChildren =
+  AuthenticatedPortalRoute._addFileChildren(AuthenticatedPortalRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRouteWithChildren
   AuthenticatedStaffAppointmentsRoute: typeof AuthenticatedStaffAppointmentsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedPortalAppointmentsRoute: AuthenticatedPortalAppointmentsRoute,
+  AuthenticatedPortalRoute: AuthenticatedPortalRouteWithChildren,
   AuthenticatedStaffAppointmentsRoute: AuthenticatedStaffAppointmentsRoute,
 }
 
