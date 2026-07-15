@@ -80,6 +80,7 @@ function Appointments() {
           reason: form.reason || undefined,
           medicalAid: form.medicalAid || undefined,
           notes: form.notes || undefined,
+          paymentMethod: form.payment as "card" | "eft" | "wallet" | "clinic",
         },
       })) as { id: string };
       setRef(row.id.slice(0, 8).toUpperCase());
