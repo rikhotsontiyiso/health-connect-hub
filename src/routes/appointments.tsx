@@ -125,12 +125,35 @@ function Appointments() {
               <Row label="Service" value={form.service} />
               <Row label="Date" value={form.date} />
               <Row label="Time" value={form.time} />
-              <Row label="Payment" value={form.payment === "clinic" ? "Pay at clinic" : "Card / Online"} />
+              <Row label="Payment" value={paymentLabel(form.payment)} />
             </dl>
+
+            {form.payment === "eft" && (
+              <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
+                <h3 className="flex items-center gap-2 font-display font-bold text-primary">
+                  <Landmark className="h-5 w-5" /> Bank transfer details
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">Please use your booking reference <strong>{ref}</strong> as the payment reference so we can match your payment.</p>
+                <dl className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
+                  <Row label="Bank" value={clinic.bank.name} />
+                  <Row label="Account holder" value={clinic.bank.accountHolder} />
+                  <Row label="Account number" value={clinic.bank.accountNumber} />
+                  <Row label="Payment reference" value={ref} />
+                </dl>
+                <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900">
+                  <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>Demo / school-project account. In a real production clinic, use a business account with a proper payment gateway (e.g. PayFast, Ozow, PayGate) instead of displaying account numbers.</span>
+                </div>
+              </div>
+            )}
+
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/portal/appointments" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
                 View my appointments
               </Link>
+              <button onClick={() => window.print()} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
+                Print / download
+              </button>
               <button onClick={() => { setSubmitted(false); setForm(empty); }} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
                 Book another
               </button>
