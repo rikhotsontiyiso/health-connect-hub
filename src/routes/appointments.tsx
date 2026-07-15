@@ -35,6 +35,14 @@ const empty: Form = {
   payment: "card", notes: "", agree: false,
 };
 
+const PAYMENT_LABELS: Record<string, string> = {
+  card: "Credit / Debit Card",
+  eft: "Direct Bank Transfer (EFT)",
+  wallet: "Mobile Wallet",
+  clinic: "Pay at Clinic",
+};
+const paymentLabel = (v: string) => PAYMENT_LABELS[v] ?? v;
+
 function Appointments() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
