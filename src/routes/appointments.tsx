@@ -82,8 +82,8 @@ function Appointments() {
           notes: form.notes || undefined,
           paymentMethod: form.payment as "card" | "eft" | "wallet" | "clinic",
         },
-      })) as { id: string };
-      setRef(row.id.slice(0, 8).toUpperCase());
+      })) as { id: string; reference?: string | null };
+      setRef(row.reference ?? row.id.slice(0, 8).toUpperCase());
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
