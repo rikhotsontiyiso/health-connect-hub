@@ -198,7 +198,7 @@ function Appointments() {
             <div className="grid gap-3 sm:grid-cols-2">
               {[
                 ["card", "Credit / Debit Card"],
-                ["eft", "Instant EFT"],
+                ["eft", "Direct Bank Transfer (EFT)"],
                 ["wallet", "Mobile Wallet"],
                 ["clinic", "Pay at Clinic"],
               ].map(([v, l]) => (
@@ -208,6 +208,11 @@ function Appointments() {
                 </label>
               ))}
             </div>
+            {form.payment === "eft" && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Bank transfer details will be shown after you confirm the booking and will also be included in your confirmation email.
+              </p>
+            )}
           </Fieldset>
 
           <div className="rounded-xl border border-border bg-background p-5">
