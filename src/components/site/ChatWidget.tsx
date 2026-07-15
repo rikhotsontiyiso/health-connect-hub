@@ -146,7 +146,7 @@ export function ChatWidget() {
             </button>
           </form>
           <p className="px-3 pb-2 text-[10px] text-muted-foreground text-center">
-            AI assistant · Not medical advice. For emergencies call +27 72 345 6789.
+            AI assistant · Not medical advice. For emergencies call 071 994 0215.
           </p>
         </div>
       )}

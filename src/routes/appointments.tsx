@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight, LogIn } from "lucide-react";
+import { CheckCircle2, CalendarDays, CreditCard, ShieldCheck, ArrowRight, LogIn, Landmark, AlertTriangle } from "lucide-react";
 import { PageHero } from "@/components/site/SiteShell";
 import { StatusBadge } from "@/components/site/StatusBadge";
-import { services, doctors } from "@/lib/clinic";
+import { services, doctors, clinic } from "@/lib/clinic";
 import { useAuth } from "@/hooks/use-auth";
 import { createAppointment } from "@/lib/appointments.functions";
 
@@ -34,6 +34,14 @@ const empty: Form = {
   service: "", doctor: "", date: "", time: "", reason: "", medicalAid: "",
   payment: "card", notes: "", agree: false,
 };
+
+const PAYMENT_LABELS: Record<string, string> = {
+  card: "Credit / Debit Card",
+  eft: "Direct Bank Transfer (EFT)",
+  wallet: "Mobile Wallet",
+  clinic: "Pay at Clinic",
+};
+const paymentLabel = (v: string) => PAYMENT_LABELS[v] ?? v;
 
 function Appointments() {
   const { user, loading } = useAuth();
@@ -72,9 +80,10 @@ function Appointments() {
           reason: form.reason || undefined,
           medicalAid: form.medicalAid || undefined,
           notes: form.notes || undefined,
+          paymentMethod: form.payment as "card" | "eft" | "wallet" | "clinic",
         },
-      })) as { id: string };
-      setRef(row.id.slice(0, 8).toUpperCase());
+      })) as { id: string; reference?: string | null };
+      setRef(row.reference ?? row.id.slice(0, 8).toUpperCase());
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -125,12 +134,35 @@ function Appointments() {
               <Row label="Service" value={form.service} />
               <Row label="Date" value={form.date} />
               <Row label="Time" value={form.time} />
-              <Row label="Payment" value={form.payment === "clinic" ? "Pay at clinic" : "Card / Online"} />
+              <Row label="Payment" value={paymentLabel(form.payment)} />
             </dl>
+
+            {form.payment === "eft" && (
+              <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5">
+                <h3 className="flex items-center gap-2 font-display font-bold text-primary">
+                  <Landmark className="h-5 w-5" /> Bank transfer details
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">Please use your booking reference <strong>{ref}</strong> as the payment reference so we can match your payment.</p>
+                <dl className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
+                  <Row label="Bank" value={clinic.bank.name} />
+                  <Row label="Account holder" value={clinic.bank.accountHolder} />
+                  <Row label="Account number" value={clinic.bank.accountNumber} />
+                  <Row label="Payment reference" value={ref} />
+                </dl>
+                <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900">
+                  <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>Demo / school-project account. In a real production clinic, use a business account with a proper payment gateway (e.g. PayFast, Ozow, PayGate) instead of displaying account numbers.</span>
+                </div>
+              </div>
+            )}
+
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/portal/appointments" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
                 View my appointments
               </Link>
+              <button onClick={() => window.print()} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
+                Print / download
+              </button>
               <button onClick={() => { setSubmitted(false); setForm(empty); }} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
                 Book another
               </button>
@@ -198,7 +230,7 @@ function Appointments() {
             <div className="grid gap-3 sm:grid-cols-2">
               {[
                 ["card", "Credit / Debit Card"],
-                ["eft", "Instant EFT"],
+                ["eft", "Direct Bank Transfer (EFT)"],
                 ["wallet", "Mobile Wallet"],
                 ["clinic", "Pay at Clinic"],
               ].map(([v, l]) => (
@@ -208,6 +240,11 @@ function Appointments() {
                 </label>
               ))}
             </div>
+            {form.payment === "eft" && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Bank transfer details will be shown after you confirm the booking and will also be included in your confirmation email.
+              </p>
+            )}
           </Fieldset>
 
           <div className="rounded-xl border border-border bg-background p-5">
