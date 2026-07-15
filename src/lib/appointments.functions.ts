@@ -5,20 +5,37 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 const APPOINTMENT_STATUSES = ["pending", "confirmed", "completed", "cancelled"] as const;
 export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
 
+const SERVICE_FEES: Record<string, number> = {
+  "General Consultations": 450,
+  "Family Medicine": 550,
+  "Children's Health": 500,
+  "Women's Health": 600,
+  "Chronic Disease Management": 550,
+  "Vaccinations": 350,
+  "Laboratory Services": 300,
+  "Pharmacy": 0,
+  "Health Screenings": 400,
+  "HIV Testing & Counselling": 0,
+  "Diabetes Care": 500,
+  "Hypertension Management": 500,
+};
+const defaultFee = 450;
+
 const createSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  firstName: z.string().min(1).max(80),
+  lastName: z.string().min(1).max(80),
   email: z.string().email(),
-  phone: z.string().min(1),
+  phone: z.string().min(1).max(30),
   dob: z.string().optional(),
   gender: z.string().optional(),
   service: z.string().min(1),
   doctor: z.string().min(1),
   date: z.string().min(1),
   time: z.string().min(1),
-  reason: z.string().optional(),
-  medicalAid: z.string().optional(),
-  notes: z.string().optional(),
+  reason: z.string().max(1000).optional(),
+  medicalAid: z.string().max(200).optional(),
+  notes: z.string().max(1000).optional(),
+  paymentMethod: z.enum(["card", "eft", "wallet", "clinic"]).default("card"),
 });
 
 export const createAppointment = createServerFn({ method: "POST" })
@@ -47,6 +64,16 @@ export const createAppointment = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    const amount = SERVICE_FEES[data.service] ?? defaultFee;
+    await supabase.from("invoices").insert({
+      appointment_id: row.id,
+      patient_id: userId,
+      amount,
+      payment_method: data.paymentMethod,
+      payment_status: "unpaid",
+    });
+
     return row;
   });
 
@@ -98,6 +125,14 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+    // When confirmed, mark invoice paid if it was EFT/card
+    if (data.status === "confirmed") {
+      await supabase
+        .from("invoices")
+        .update({ payment_status: "paid", paid_at: new Date().toISOString() })
+        .eq("appointment_id", data.id)
+        .eq("payment_status", "unpaid");
+    }
     return row;
   });
 
@@ -130,5 +165,6 @@ export const getMyRole = createServerFn({ method: "GET" })
     return {
       roles,
       isStaff: roles.includes("receptionist") || roles.includes("doctor"),
+      isDoctor: roles.includes("doctor"),
     };
   });
