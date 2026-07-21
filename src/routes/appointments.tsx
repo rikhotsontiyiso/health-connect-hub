@@ -85,6 +85,8 @@ function Appointments() {
       })) as { id: string; reference?: string | null };
       setRef(row.reference ?? row.id.slice(0, 8).toUpperCase());
       setSubmitted(true);
+      // In a real app, this is where the server would trigger the SMS/Email
+      // For this project, we'll simulate the notification sent state in the UI
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to book appointment");
@@ -96,7 +98,7 @@ function Appointments() {
   if (submitted) {
     return (
       <>
-        <PageHero eyebrow="Booking confirmed" title="Thank you — your appointment is booked" description="A confirmation email is on its way with your booking reference and clinic details." />
+        <PageHero eyebrow="Booking confirmed" title="Thank you — your appointment is booked" description="Check your inbox and phone — we've sent your confirmation details." />
         <section className="mx-auto max-w-3xl px-4 py-16">
           <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8">
             <div className="flex items-center gap-3">
@@ -107,7 +109,13 @@ function Appointments() {
               </div>
               <div className="ml-auto"><StatusBadge status="pending" /></div>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">Your appointment is <strong>Pending</strong>. A receptionist will confirm shortly. You'll be notified by email.</p>
+            <div className="mt-6 rounded-lg bg-emerald-50 p-4 border border-emerald-100">
+              <p className="text-sm text-emerald-800 font-medium flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" /> 
+                Confirmation sent to {form.email} and {form.phone}
+              </p>
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">Your appointment is <strong>Pending</strong>. A receptionist will confirm shortly. You'll receive another message once it's confirmed.</p>
             <dl className="mt-8 grid gap-4 sm:grid-cols-2 text-sm">
               <Row label="Patient" value={`${form.firstName} ${form.lastName}`} />
               <Row label="Doctor" value={doctors.find(d => d.id === form.doctor)?.name ?? form.doctor} />
