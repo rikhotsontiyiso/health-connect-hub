@@ -41,6 +41,61 @@ const createSchema = z.object({
   paymentMethod: z.enum(["card", "eft", "wallet", "clinic"]).default("card"),
 });
 
+function createPublicClient() {
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient<Database>(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
+      },
+    },
+  });
+}
+
+export const createGuestAppointment = createServerFn({ method: "POST" })
+  .inputValidator((data: z.infer<typeof createSchema>) => createSchema.parse(data))
+  .handler(async ({ data }) => {
+    const supabase = createPublicClient();
+    const { data: row, error } = await supabase
+      .from("appointments")
+      .insert({
+        patient_id: null,
+        patient_first_name: data.firstName,
+        patient_last_name: data.lastName,
+        patient_email: data.email,
+        patient_phone: data.phone,
+        patient_dob: data.dob || null,
+        patient_gender: data.gender || null,
+        service: data.service,
+        doctor_id: data.doctor,
+        appointment_date: data.date,
+        appointment_time: data.time,
+        reason: data.reason || null,
+        medical_aid: data.medicalAid || null,
+        notes: data.notes || null,
+      })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+
+    const amount = SERVICE_FEES[data.service] ?? defaultFee;
+    await supabase.from("invoices").insert({
+      appointment_id: row.id,
+      patient_id: null,
+      amount,
+      payment_method: data.paymentMethod,
+      payment_status: "unpaid",
+    });
+
+    return row;
+  });
+
+
 export const createAppointment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: z.infer<typeof createSchema>) => createSchema.parse(data))
