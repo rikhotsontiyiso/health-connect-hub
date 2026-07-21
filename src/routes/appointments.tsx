@@ -66,7 +66,8 @@ function Appointments() {
     setBusy(true);
     setError(null);
     try {
-      const row = (await createFn({
+      const fn = user ? createFn : createGuestFn;
+      const row = (await fn({
         data: {
           firstName: form.firstName,
           lastName: form.lastName,
