@@ -27,7 +27,7 @@ export type Database = {
           patient_email: string
           patient_first_name: string
           patient_gender: string | null
-          patient_id: string
+          patient_id: string | null
           patient_last_name: string
           patient_phone: string
           reason: string | null
@@ -48,7 +48,7 @@ export type Database = {
           patient_email: string
           patient_first_name: string
           patient_gender?: string | null
-          patient_id: string
+          patient_id?: string | null
           patient_last_name: string
           patient_phone: string
           reason?: string | null
@@ -69,7 +69,7 @@ export type Database = {
           patient_email?: string
           patient_first_name?: string
           patient_gender?: string | null
-          patient_id?: string
+          patient_id?: string | null
           patient_last_name?: string
           patient_phone?: string
           reason?: string | null
@@ -88,7 +88,7 @@ export type Database = {
           id: string
           issued_at: string
           paid_at: string | null
-          patient_id: string
+          patient_id: string | null
           payment_method: string | null
           payment_status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
@@ -100,7 +100,7 @@ export type Database = {
           id?: string
           issued_at?: string
           paid_at?: string | null
-          patient_id: string
+          patient_id?: string | null
           payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -112,7 +112,7 @@ export type Database = {
           id?: string
           issued_at?: string
           paid_at?: string | null
-          patient_id?: string
+          patient_id?: string | null
           payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
