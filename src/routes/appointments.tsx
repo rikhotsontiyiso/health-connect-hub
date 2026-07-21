@@ -93,26 +93,6 @@ function Appointments() {
     }
   }
 
-  if (!loading && !user) {
-    return (
-      <>
-        <PageHero eyebrow="Appointments" title="Sign in to book" description="Create a free account or sign in to book and manage your appointments." />
-        <section className="mx-auto max-w-md px-4 py-16">
-          <div className="rounded-2xl border border-border bg-surface p-8 text-center">
-            <LogIn className="mx-auto h-8 w-8 text-primary" />
-            <p className="mt-4 text-sm text-muted-foreground">You need an account to book online so you can view your upcoming and past appointments.</p>
-            <button
-              onClick={() => navigate({ to: "/auth", search: { redirect: "/appointments" } })}
-              className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
-            >
-              Sign in or create account <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        </section>
-      </>
-    );
-  }
-
   if (submitted) {
     return (
       <>
@@ -157,9 +137,16 @@ function Appointments() {
             )}
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/portal/appointments" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
-                View my appointments
-              </Link>
+              {user && (
+                <Link to="/portal/appointments" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
+                  View my appointments
+                </Link>
+              )}
+              {!user && (
+                <Link to="/auth" className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">
+                  Sign in to track bookings
+                </Link>
+              )}
               <button onClick={() => window.print()} className="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-semibold hover:border-primary">
                 Print / download
               </button>

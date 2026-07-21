@@ -46,7 +46,7 @@ export const createAppointment = createServerFn({ method: "POST" })
     const { data: row, error } = await supabase
       .from("appointments")
       .insert({
-        patient_id: userId,
+        patient_id: userId || null,
         patient_first_name: data.firstName,
         patient_last_name: data.lastName,
         patient_email: data.email,
@@ -68,7 +68,7 @@ export const createAppointment = createServerFn({ method: "POST" })
     const amount = SERVICE_FEES[data.service] ?? defaultFee;
     await supabase.from("invoices").insert({
       appointment_id: row.id,
-      patient_id: userId,
+      patient_id: userId || null,
       amount,
       payment_method: data.paymentMethod,
       payment_status: "unpaid",
@@ -81,6 +81,7 @@ export const listMyAppointments = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
+    if (!userId) return [];
     const { data, error } = await supabase
       .from("appointments")
       .select("*")
@@ -95,6 +96,7 @@ export const listAllAppointments = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
+    if (!userId) throw new Error("Unauthorized");
     const { data: staffCheck } = await supabase.rpc("is_staff", { _user_id: userId });
     if (!staffCheck) throw new Error("Forbidden");
     const { data, error } = await supabase
@@ -116,6 +118,7 @@ export const updateAppointmentStatus = createServerFn({ method: "POST" })
   .inputValidator((data: z.infer<typeof updateStatusSchema>) => updateStatusSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    if (!userId) throw new Error("Unauthorized");
     const { data: staffCheck } = await supabase.rpc("is_staff", { _user_id: userId });
     if (!staffCheck) throw new Error("Forbidden");
     const { data: row, error } = await supabase
@@ -141,6 +144,7 @@ export const cancelMyAppointment = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    if (!userId) throw new Error("Unauthorized");
     const { data: row, error } = await supabase
       .from("appointments")
       .update({ status: "cancelled" })
@@ -156,6 +160,7 @@ export const getMyRole = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
+    if (!userId) return { roles: [], isStaff: false, isDoctor: false };
     const { data, error } = await supabase
       .from("user_roles")
       .select("role")
