@@ -47,6 +47,7 @@ function Appointments() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const createFn = useServerFn(createAppointment);
+  const createGuestFn = useServerFn(createGuestAppointment);
   const [form, setForm] = useState<Form>(empty);
   const [submitted, setSubmitted] = useState(false);
   const [ref, setRef] = useState("");
