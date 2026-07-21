@@ -45,7 +45,7 @@ function AuthPage() {
     setError(null);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -54,6 +54,12 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        
+        if (data.user && data.session === null) {
+          setError("Please check your email to confirm your account before signing in.");
+          setBusy(false);
+          return;
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -84,7 +90,11 @@ function AuthPage() {
             )}
             <Input label="Email" type="email" value={email} onChange={setEmail} required />
             <Input label="Password" type="password" value={password} onChange={setPassword} required minLength={6} />
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <div className={`rounded-lg p-3 text-sm ${error.includes("check your email") ? "bg-blue-50 text-blue-700 border border-blue-100" : "bg-destructive/10 text-destructive border border-destructive/20"}`}>
+                {error}
+              </div>
+            )}
             <button type="submit" disabled={busy} className="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground disabled:opacity-50">
               {busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
             </button>
