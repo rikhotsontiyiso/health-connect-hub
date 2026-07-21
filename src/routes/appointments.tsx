@@ -6,7 +6,7 @@ import { PageHero } from "@/components/site/SiteShell";
 import { StatusBadge } from "@/components/site/StatusBadge";
 import { services, doctors, clinic } from "@/lib/clinic";
 import { useAuth } from "@/hooks/use-auth";
-import { createAppointment } from "@/lib/appointments.functions";
+import { createAppointment, createGuestAppointment } from "@/lib/appointments.functions";
 
 export const Route = createFileRoute("/appointments")({
   head: () => ({
