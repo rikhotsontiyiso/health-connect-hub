@@ -47,13 +47,17 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     const authHeader = request?.headers?.get('authorization');
     const token = authHeader?.startsWith('Bearer ') ? authHeader.replace('Bearer ', '') : null;
 
+    if (!token) {
+      throw new Response('Unauthorized: No authorization header provided', { status: 401 });
+    }
+
     const supabase = createClient<Database>(
       SUPABASE_URL!,
       SUPABASE_PUBLISHABLE_KEY!,
       {
         global: {
           fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY!),
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` },
         },
         auth: {
           storage: undefined,
@@ -63,25 +67,18 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    if (token && token.split('.').length === 3) {
-      const { data, error } = await supabase.auth.getClaims(token);
-      if (!error && data?.claims?.sub) {
-        return next({
-          context: {
-            supabase,
-            userId: data.claims.sub,
-            claims: data.claims,
-          },
-        });
-      }
+    const { data, error } = await supabase.auth.getClaims(token);
+    if (error || !data?.claims?.sub) {
+      throw new Response('Unauthorized', { status: 401 });
     }
 
     return next({
       context: {
         supabase,
-        userId: null,
-        claims: null,
+        userId: data.claims.sub as string,
+        claims: data.claims,
       },
     });
   },
 );
+
